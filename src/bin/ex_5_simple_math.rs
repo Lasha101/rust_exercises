@@ -6,7 +6,13 @@ fn main() {
     &["What is the first number? ", "What is the second number? "];
     let inputed_values = collect_inputs(
                               display_strings);
-    
+    let ops_list: &[&dyn Operation] = 
+    &[&AddAction, &SubAction, &MultAction, &DivAction];
+    for op in ops_list {
+        print_final_string(
+            *op, inputed_values[0], inputed_values[1]
+        );
+    }
 }
 
 fn get_user_input(prompt_text: &str) -> String {
