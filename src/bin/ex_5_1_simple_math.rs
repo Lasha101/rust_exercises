@@ -1,14 +1,24 @@
-use std::io::{self, Write};
-
+use std::{io::{self, Write}};
 
 fn main() {
     let display_strings: &[&str] = 
     &["What is the first number? ", "What is the second number? "];
     let inputed_values = collect_inputs(
                               display_strings);
-    for op in ops_list {
-        print_final_string();
-    }
+    
+    let mut local_buffer = [0; 4];
+    let mut length_tracker: usize = 0;
+    
+    
+    calculate(
+        inputed_values[0], 
+        inputed_values[1], 
+        &mut local_buffer, 
+        &mut length_tracker
+    );
+    
+    let active_slice = &local_buffer[0..4];
+    print_final_string(&inputed_values, active_slice);
 }
 
 fn get_user_input(prompt_text: &str) -> String {
@@ -53,7 +63,10 @@ fn calculate(val1: i32, val2: i32,
 }
 
 
-fn print_final_string() {
-
-    println!("{} {} {} = {}", val1, operator, val2, result);
+fn print_final_string(vals: &[i32], results: &[i32]) {
+    let ops = ["+", "-", "*", "/"];
+    for (i, op) in ops.iter().enumerate() {
+        println!("{} {} {} = {}", vals[0], op, vals[1], results[i]);
+    }
+    
 }
