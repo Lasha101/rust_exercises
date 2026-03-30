@@ -9,14 +9,17 @@ fn main() {
     let inputed_values = collect_inputs(
                               display_strings);
 
-    println!("You entered dimensions of 15 feet by 20 feet.");
-    
-    let area = area(&inputed_values[0],
-                         &inputed_values[1]);
+    println!("You entered dimensions of {} feet by {} feet.",
+              inputed_values[0], inputed_values[1]);
 
-    let area_in_meters = area_in_meters(&area);
+    let total_area = area(inputed_values[0],
+                         inputed_values[1]);
 
-    print_final_string(area, area_in_meters);
+    const INDEX: f64 = 0.09290304;
+
+    let total_area_in_meters = area_in_meters(&total_area, &INDEX);
+
+    print_final_string(total_area, total_area_in_meters);
 }
 
 fn get_user_input(prompt_text: &str) -> String {
@@ -44,12 +47,12 @@ fn collect_inputs(arr_str: &[&str]) -> Vec<i32> {
     user_inputs
 }
 
-fn area(length: &i32, width: &i32) -> i32 {
+fn area(length: i32, width: i32) -> i32 {
     length * width 
 }
 
-fn area_in_meters(area: &i32) -> f64 {
-    let result = (*area as f64) * 0.09290304;
+fn area_in_meters(area: &i32, index: &f64) -> f64 {
+    let result = (*area as f64) * index;
     (result * 1000.0).round() / 1000.0
 }
 
