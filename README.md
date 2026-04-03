@@ -33,6 +33,7 @@ What are the pros and cons of each?
 I never copy and paste code from the LLM conversation into my implementation files.
 
 Repository Structure
+
 All exercises are located in the /src/bin directory.
 
 Sometimes there are multiple solutions for the same problem. For example, exercise 5 has ex_5_1 and ex_5. The ex_5 version is intentionally over-engineered; I used interfaces (traits) to achieve the Open-Closed Principle (OCP).
