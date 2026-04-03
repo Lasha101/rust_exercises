@@ -1,7 +1,9 @@
 Rust Exercises
+
 After watching an introductory video course on Rust, I decided to acquire hands-on experience by using Brian P. Hogan's book, Exercises for Programmers: 57 Challenges to Develop Your Coding Skills. In this repository, I commit my solved exercises.
 
 My Approach
+
 The book provides a universal collection of tasks that can be solved with any general-purpose language. I use a specific learning method: using an LLM strictly as documentation.
 
 Each time I open a conversation with the LLM, I provide the following strict instructions:
