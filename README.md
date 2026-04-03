@@ -34,6 +34,7 @@ What are the pros and cons of each?
 
 I never copy and paste code from the LLM conversation into my implementation files.
 
+
 Repository Structure
 
 All exercises are located in the /src/bin directory.
