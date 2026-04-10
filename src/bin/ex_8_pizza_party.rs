@@ -10,11 +10,16 @@ fn main() {
     let inputed_values = collect_inputs(
                               display_strings);
 
-    let pizza_per_person = calc_pizza_per_person();
+    let slice_per_person = calc_slice_per_person(&inputed_values[0],
+                                                      &inputed_values[1],
+                                                      &inputed_values[2]);
 
-    let leftover = calc_leftover();
+    let leftover = calc_leftover(&inputed_values[0],
+                                      &inputed_values[1],
+                                      &inputed_values[2]);
 
-    print_final_string();
+    print_final_string(&inputed_values[0], &inputed_values[1],
+                        slice_per_person, leftover);               
     }
 fn get_user_input(prompt_text: &str) -> String {
     print!("{}", prompt_text);
@@ -41,18 +46,18 @@ fn collect_inputs(arr_str: &[&str]) -> Vec<i32> {
     user_inputs
 }
 
-fn calc_pizza_per_person(person: i32, pizza: i32, slice: i32) -> i32 {
-    todo!()
+fn calc_slice_per_person(person: &i32, pizza: &i32, slice: &i32) -> i32 {
+    (*pizza * *slice) / *person
 }
 
-fn calc_leftover(person: &i32, pizza: &i32, slice: i32) -> i32 {
-    todo!()
+fn calc_leftover(person: &i32, pizza: &i32, slice: &i32) -> i32 {
+    (*pizza * *slice) % *person
 }
 
 
-fn print_final_string(person: i32, pizza: i32, slice: i32, leftover: i32) {
+fn print_final_string(person: &i32, pizza: &i32, slice_per_person: i32, leftover: i32) {
     println!("{} people with {} pizzas\n\
              Each person gets {} pieces of pizza.\n\
              There are {} leftover pieces.", 
-             person, pizza, slice, leftover);
+             person, pizza, slice_per_person, leftover);
 }
