@@ -15,7 +15,7 @@ fn main() {
     if inputed_values.0 == "WI" {
        print_final_string(&wisconsin_tax_rate, inputed_values.1); 
     } else {
-        println!("{}", inputed_values.1)
+        println!("The total is ${:.2}", inputed_values.1)
     }
 
 }
@@ -81,7 +81,9 @@ impl Calculation for State {
 
 fn print_final_string(calc: &dyn Calculation, amount: f64) {
     let result = calc.calculate(amount);
-    let total = result + amount; 
-    println!("The subtotal is ${}.\nThe tax is ${}.\nThe total is ${}.",
-            amount, result, total);
+    let rounded_result = (result * 100.0).round()/100.0;
+    let total = result + amount;
+    let rounded_total = (total * 100.0).round()/100.0; 
+    println!("The subtotal is ${:.2}.\nThe tax is ${}.\nThe total is ${:.2}.",
+            amount, rounded_result, rounded_total);
 }
