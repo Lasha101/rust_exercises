@@ -24,10 +24,10 @@ fn get_user_input(prompt_text: &str) -> String {
 
 fn validate_input(txt: &str) -> i32 {
     loop {
-    let input = get_user_input(txt);
-    match  input.trim().parse::<i32>() {
-        Ok(parsed_number) => return parsed_number,
-        Err(_) => println!("Invalid input. Please enter a whole number."),
+        let input = get_user_input(txt);
+        match  input.trim().parse::<i32>() {
+            Ok(parsed_number) => return parsed_number,
+            Err(_) => println!("Invalid input. Please enter a whole number."),
         }
     }
 }
