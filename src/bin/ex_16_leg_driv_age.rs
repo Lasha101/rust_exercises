@@ -1,6 +1,5 @@
 use std::io::{self, Write};
 
-
 fn main() {
     let display_string: &str = "What is your age? ";
 
@@ -10,8 +9,6 @@ fn main() {
     } else {
         println!("You are not old enough to legally drive.");
     }
-
-
 }
 
 fn get_user_input(prompt_text: &str) -> String {
@@ -31,7 +28,6 @@ fn validate_input(txt: &str) -> i32 {
         }
     }
 }
-
 
 fn comparing_function(age: i32) -> bool {
     age >= 16

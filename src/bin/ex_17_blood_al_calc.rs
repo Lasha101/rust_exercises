@@ -1,6 +1,5 @@
 use std::io::{self, Write};
 
-
 fn main() {
     let display_strings: &[&str] = 
     &[
@@ -85,9 +84,6 @@ fn blood_alc_calculator(weight: &f64,
     (num_of_drinks * alcohol_per_unit * 5.14) /
     (weight * gender) - 0.015 * passed_time
 }
-
-
-
 
 fn print_final_string(ratio: f64) {
     println!("Your BAC is {}", ratio);
