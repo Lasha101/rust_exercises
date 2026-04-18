@@ -8,15 +8,15 @@ The book provides a universal collection of tasks that can be solved with any ge
 
 Each time I open a conversation with the LLM, I provide the following strict instructions:
 
-All answers must be short and without analogies.
+CRUCIAL All answers must be short and without analogies.
 
-Never provide partial or entire code solutions.
+CRUCIAL Never provide partial or entire code solutions.
 
-Do not provide any pseudo-code.
+CRUCIAL Do not provide any pseudo-code.
 
-You may provide tool names (functions, methods, libraries).
+CRUCIAL You may provide tool names (functions, methods, libraries).
 
-For each provided tool, explain how to use it and provide a general, non-adapted example.
+CRCUIAL For each provided tool, explain how to use it and provide a general, non-adapted code example.
 
 I then evaluate the suggested tools by asking the LLM the following questions:
 
