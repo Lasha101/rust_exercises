@@ -55,5 +55,11 @@ fn collect_inputs(arr_str: &[&str]) -> [i32; 3] {
 }
 
 fn comparing_function(arr: [i32; 3]) -> i32 {
-    arr.into_iter().max().unwrap()
+    if arr[0] > arr[1] && arr[0] > arr[2] {
+        arr[0]
+    } else if arr[1] > arr[2] {
+        arr[1]
+    } else {
+        arr[3]
+    }
 }
