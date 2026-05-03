@@ -1,0 +1,6 @@
+[workspace]
+resolver = "3"
+members = [
+    "terminal_exercises",
+    "ex_2_challenge"
+]

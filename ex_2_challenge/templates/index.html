@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Symbol Counter</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        .result { font-weight: bold; color: green; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Alphabetical Symbol Counter</h1>
+    
+    <form action="/submit" method="post">
+        <label for="row_text">Enter text (letters only):</label>
+        <input type="text" id="row_text" name="row_text" required>
+        <button type="submit">Count Symbols</button>
+    </form>
+
+    {% if symbol_count > 0 %}
+    <div class="result">
+        Total alphabetical symbols: {{ symbol_count }}
+    </div>
+    {% endif %}
+</body>
+</html>
