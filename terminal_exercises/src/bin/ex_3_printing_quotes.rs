@@ -1,10 +1,22 @@
 use std::io::{self, Write};
+use std::collections::HashMap;
+
 
 fn main() {
-    let quote = get_user_input("What is the quote? ");
-    let author = get_user_input("Who said it? ");
-    let final_sentence = author + " says, \"" + &quote + "\"";
-    println!("{}",final_sentence);
+    let author = get_user_input("Who is the author? ");
+
+    let quotes = [
+    HashMap::from([("Yogi Berra", "Never answer an anonymous letter.")]),
+    HashMap::from([("Albert Einstein", "Imagination is more important than knowledge.")]),
+    HashMap::from([("Oscar Wilde", "Be yourself; everyone else is already taken.")]),
+    ];
+
+    let result = quotes.iter().find_map(|quote| quote.get(author.as_str()));
+    if let Some(quote) =  result {
+        println!("{}", quote);
+    } else {
+        println!("Author not found!");
+    }
 }
 
 fn get_user_input(prompt_text: &str) -> String {
