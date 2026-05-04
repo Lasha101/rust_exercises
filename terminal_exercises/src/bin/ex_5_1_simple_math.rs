@@ -35,10 +35,11 @@ fn collect_inputs(arr_str: &[&str]) -> Vec<i32> {
         loop {
             let input = get_user_input(*txt);
             match  input.trim().parse::<i32>() {
-                Ok(parsed_number) => {
+                Ok(parsed_number) if parsed_number >= 0 => {
                     user_inputs.push(parsed_number);
                     break;
                 },
+                Ok(_) => println!("Please enter a non-negative number"),
                 Err(error_message) => println!("{}", error_message),
             }
         }

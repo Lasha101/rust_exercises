@@ -284,6 +284,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ex_5_challenge"
+version = "0.1.0"
+dependencies = [
+ "askama",
+ "askama_axum",
+ "axum",
+ "serde",
+ "tokio",
+ "validator",
+]
+
+[[package]]
 name = "find-msvc-tools"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
