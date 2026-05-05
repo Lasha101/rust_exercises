@@ -102,6 +102,13 @@ struct PageTemplate {
     error: String,
 }
 
+#[derive(Template)]
+#[template(path = "result.html")]
+struct ResultTemplate {
+    result: String,
+    error: String,
+}
+
 async fn show_form() -> impl IntoResponse {
     PageTemplate {
         result: String::new(),
@@ -113,7 +120,7 @@ async fn handle_submit(Form(payload): Form<UserInput>) -> impl IntoResponse {
     match payload.validate() {
         Ok(_) => {
             if payload.second == 0 {
-                return PageTemplate {
+                return ResultTemplate {
                     result: String::new(),
                     error: "Second number cannot be 0 (division by zero).".into(),
                 }
@@ -122,21 +129,20 @@ async fn handle_submit(Form(payload): Form<UserInput>) -> impl IntoResponse {
 
             let result = calculate_all(payload.first, payload.second);
 
-            PageTemplate {
+            ResultTemplate {
                 result,
                 error: String::new(),
             }
             .into_response()
         }
 
-        Err(_) => PageTemplate {
+        Err(_) => ResultTemplate {
             result: String::new(),
             error: "Only non-negative numeric values are allowed.".into(),
         }
         .into_response(),
     }
 }
-
 #[tokio::main]
 async fn main() {
     let app = Router::new()

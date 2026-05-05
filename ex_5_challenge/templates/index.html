@@ -3,32 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Math</title>
+    <script src="https://unpkg.com/htmx.org"></script>
 </head>
 <body>
 
-<h1>Calculator</h1>
-
-<form action="/submit" method="post">
-    <label>First number:</label>
-    <input type="number" name="first" min="0" required>
-
-    <br><br>
-
-    <label>Second number:</label>
-    <input type="number" name="second" min="0" required>
-
-    <br><br>
-
-    <button type="submit">Calculate</button>
-</form>
-
-{% if error.len() > 0 %}
+<h1>Calculator</h1>{% if error.len() > 0 %}
 <p style="color:red;">{{ error }}</p>
 {% endif %}
 
 {% if result.len() > 0 %}
 <pre style="color:green;">{{ result }}</pre>
 {% endif %}
+
+<form action="/submit" method="post">
+    <label>First number:</label>
+    <input
+        type="number"
+        name="first"
+        min="0"
+        hx-post="/submit"
+        hx-trigger="input delay:300ms"
+        hx-target="#result-box"
+        hx-include="closest form"
+        hx-swap="innerHTML"
+    >
+
+    <br><br>
+
+    <label>Second number:</label>
+    <input
+        type="number"
+        name="second"
+        min="0"
+        hx-post="/submit"
+        hx-trigger="input delay:300ms"
+        hx-target="#result-box"
+        hx-include="closest form"
+        hx-swap="innerHTML"
+    >
+
+    <br><br>
+
+</form>
+
+<div id="result-box">
+    {% include "result.html" %}
+</div>
 
 </body>
 </html>
