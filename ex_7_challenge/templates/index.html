@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>Calculator</h1>{% if error.len() > 0 %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if result.len() > 0 %}
+<pre style="color:green;">{{ result }}</pre>
+{% endif %}
+
+<form action="/submit" method="post">
+    <label>What is the length of the room in feet?</label>
+    <input
+        type="number"
+        name="first"
+        min="0"
+        hx-post="/submit"
+        hx-trigger="input delay:300ms"
+        hx-target="#result-box"
+        hx-include="closest form"
+        hx-swap="innerHTML"
+    >
+
+    <br><br>
+
+    <label>What is the width of the room in feet?</label>
+    <input
+        type="number"
+        name="second"
+        min="0"
+        hx-post="/submit"
+        hx-trigger="input delay:300ms"
+        hx-target="#result-box"
+        hx-include="closest form"
+        hx-swap="innerHTML"
+    >
+
+    <br><br>
+
+</form>
+
+<div id="result-box">
+    {% include "result.html" %}
+</div>
+</body>
+</html>

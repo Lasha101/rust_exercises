@@ -1,0 +1,7 @@
+{% if error.len() > 0 %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if result.len() > 0 %}
+<pre style="color:green;">{{ result }}</pre>
+{% endif %}

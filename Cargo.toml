@@ -3,4 +3,6 @@ resolver = "3"
 members = [
     "terminal_exercises",
     "ex_2_challenge", 
-    "ex_5_challenge"]
+    "ex_5_challenge", 
+    "ex_7_challenge",
+    ]
