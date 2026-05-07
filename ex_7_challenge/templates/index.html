@@ -16,7 +16,21 @@
 {% endif %}
 
 <form action="/submit" method="post">
-    <label>What is the length of the room in feet?</label>
+    <label>Unit of measurement:</label>
+    <select 
+        name="unit" 
+        hx-post="/submit" 
+        hx-trigger="change" 
+        hx-target="#result-box"
+        hx-include="closest form"
+    >
+        <option value="feet">Feet</option>
+        <option value="meters">Meters</option>
+    </select>
+
+    <br><br>
+
+    <label>What is the length of the room?</label>
     <input
         type="number"
         name="first"
@@ -30,7 +44,7 @@
 
     <br><br>
 
-    <label>What is the width of the room in feet?</label>
+    <label>What is the width of the room?</label>
     <input
         type="number"
         name="second"

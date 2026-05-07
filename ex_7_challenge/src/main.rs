@@ -12,6 +12,7 @@ use std::net::SocketAddr;
 struct UserInput {
     first: String,
     second: String,
+    unit: String,
 }
 
 trait Operation {
@@ -26,14 +27,24 @@ impl Operation for Mul {
     }
 }
 
-fn make_line(a: f64) -> String {
-    format!("The area is \n{a} square feet")
-}
-
-fn calculate_area(a: i32, b: i32) -> String {
+fn calculate_area(a: i32, b: i32, unit: &str) -> String {
     let op: &dyn Operation = &Mul;
-    let result = op.calculate(a, b);
-    make_line(result)
+    let area = op.calculate(a, b);
+    const METER_FACTOR: f64 = 0.09290304;
+
+    if unit == "meters" {
+        format!(
+            "The area is \n{} square meters\n{:.3} square feet",
+            area,
+            area / METER_FACTOR
+        )
+    } else {
+        format!(
+            "The area is \n{} square feet\n{:.3} square meters",
+            area,
+            area * METER_FACTOR
+        )
+    }
 }
 
 #[derive(Template)]
@@ -71,7 +82,7 @@ async fn handle_submit(Form(payload): Form<UserInput>) -> impl IntoResponse {
 
     match (f_str.parse::<i32>(), s_str.parse::<i32>()) {
         (Ok(f), Ok(s)) if f > 0 && s > 0 => ResultTemplate {
-            result: calculate_area(f, s),
+            result: calculate_area(f, s, &payload.unit),
             error: String::new(),
         },
         _ => ResultTemplate {

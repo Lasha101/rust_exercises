@@ -7,27 +7,15 @@ use axum::{
 };
 use serde::Deserialize;
 use std::net::SocketAddr;
-use validator::{Validate, ValidationError};
 
-fn validate_number(v: i32) -> Result<(), ValidationError> {
-    if v >= 0 {
-        Ok(())
-    } else {
-        Err(ValidationError::new("number_must_be_positive"))
-    }
-}
-
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 struct UserInput {
-    #[validate(custom(function = "validate_number"))]
-    first: i32,
-
-    #[validate(custom(function = "validate_number"))]
-    second: i32,
+    first: String,
+    second: String,
 }
 
 trait Operation {
-    fn calculate(&self, a: i32, b: i32) -> i32;
+    fn calculate(&self, a: i32, b: i32) -> f64;
     fn symbol(&self) -> char;
 }
 
@@ -37,8 +25,8 @@ struct Mul;
 struct Div;
 
 impl Operation for Add {
-    fn calculate(&self, a: i32, b: i32) -> i32 {
-        a + b
+    fn calculate(&self, a: i32, b: i32) -> f64 {
+        a as f64 + b as f64
     }
 
     fn symbol(&self) -> char {
@@ -47,8 +35,8 @@ impl Operation for Add {
 }
 
 impl Operation for Sub {
-    fn calculate(&self, a: i32, b: i32) -> i32 {
-        a - b
+    fn calculate(&self, a: i32, b: i32) -> f64 {
+        a as f64 - b as f64
     }
 
     fn symbol(&self) -> char {
@@ -57,8 +45,8 @@ impl Operation for Sub {
 }
 
 impl Operation for Mul {
-    fn calculate(&self, a: i32, b: i32) -> i32 {
-        a * b
+    fn calculate(&self, a: i32, b: i32) -> f64 {
+        a as f64 * b as f64
     }
 
     fn symbol(&self) -> char {
@@ -67,8 +55,8 @@ impl Operation for Mul {
 }
 
 impl Operation for Div {
-    fn calculate(&self, a: i32, b: i32) -> i32 {
-        a / b
+    fn calculate(&self, a: i32, b: i32) -> f64 {
+        a as f64 / b as f64
     }
 
     fn symbol(&self) -> char {
@@ -117,32 +105,31 @@ async fn show_form() -> impl IntoResponse {
 }
 
 async fn handle_submit(Form(payload): Form<UserInput>) -> impl IntoResponse {
-    match payload.validate() {
-        Ok(_) => {
-            if payload.second == 0 {
-                return ResultTemplate {
+    let f_res = payload.first.trim().parse::<i32>();
+    let s_res = payload.second.trim().parse::<i32>();
+
+    match (f_res, s_res) {
+        (Ok(f), Ok(s)) if f >= 0 && s >= 0 => {
+            if s == 0 {
+                ResultTemplate {
                     result: String::new(),
                     error: "Second number cannot be 0 (division by zero).".into(),
                 }
-                .into_response();
+            } else {
+                ResultTemplate {
+                    result: calculate_all(f, s),
+                    error: String::new(),
+                }
             }
-
-            let result = calculate_all(payload.first, payload.second);
-
-            ResultTemplate {
-                result,
-                error: String::new(),
-            }
-            .into_response()
         }
-
-        Err(_) => ResultTemplate {
+        _ => ResultTemplate {
             result: String::new(),
             error: "Only non-negative numeric values are allowed.".into(),
-        }
-        .into_response(),
+        },
     }
+    .into_response()
 }
+
 #[tokio::main]
 async fn main() {
     let app = Router::new()
