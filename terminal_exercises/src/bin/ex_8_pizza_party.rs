@@ -4,23 +4,20 @@ use std::io::{self, Write};
 fn main() {
     let display_strings: &[&str] = 
     &["How many people? ", 
-    "How many pizzas do you have? ",
-    "How many number of slices per pizza? "];
+    "How many number of slices per person? "];
 
     let inputed_values = collect_inputs(
                               display_strings);
 
-    let slice_per_person = calc_slice_per_person(&inputed_values[0],
-                                                      &inputed_values[1],
-                                                      &inputed_values[2]);
+    let number_pizzas = calc_num_pizzas(inputed_values[0],
+                                      inputed_values[1]);
 
-    let leftover = calc_leftover(&inputed_values[0],
-                                      &inputed_values[1],
-                                      &inputed_values[2]);
+    print_final_string(
+        &inputed_values[0], 
+        &inputed_values[1],
+        number_pizzas);           
+}
 
-    print_final_string(&inputed_values[0], &inputed_values[1],
-                        slice_per_person, leftover);               
-    }
 fn get_user_input(prompt_text: &str) -> String {
     print!("{}", prompt_text);
     io::stdout().flush().expect("Error to show the text!");
@@ -46,18 +43,26 @@ fn collect_inputs(arr_str: &[&str]) -> Vec<i32> {
     user_inputs
 }
 
-fn calc_slice_per_person(person: &i32, pizza: &i32, slice: &i32) -> i32 {
-    (*pizza * *slice) / *person
-}
-
-fn calc_leftover(person: &i32, pizza: &i32, slice: &i32) -> i32 {
-    (*pizza * *slice) % *person
+fn calc_num_pizzas(people: i32, slice_per_person: i32) -> i32 {
+    const SLICES_PER_PIZZA: f64 = 8.0;
+    ((people as f64 * slice_per_person as f64) / SLICES_PER_PIZZA).ceil() as i32
 }
 
 
-fn print_final_string(person: &i32, pizza: &i32, slice_per_person: i32, leftover: i32) {
-    println!("{} people with {} pizzas\n\
-             Each person gets {} pieces of pizza.\n\
-             There are {} leftover pieces.", 
-             person, pizza, slice_per_person, leftover);
+fn print_final_string(person: &i32, slice_per_person: &i32, num_pizzas: i32) {
+    let piece = if slice_per_person <= &1 {
+        "piece"
+    } else {
+        "pieces"
+    };
+    let pizza_word = if num_pizzas == 1 {
+        "pizza"
+    } else {
+        "pizzas"
+    };
+    println!("{} people, {} slices per pizza\n\
+             Each person gets {} {} of pizza.\n\
+             You need to purchase {} full {}.", 
+             person, 8, slice_per_person, piece,
+             num_pizzas, pizza_word);
 }
