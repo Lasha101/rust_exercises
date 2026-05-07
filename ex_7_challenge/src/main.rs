@@ -7,23 +7,11 @@ use axum::{
 };
 use serde::Deserialize;
 use std::net::SocketAddr;
-use validator::{Validate, ValidationError};
 
-fn validate_number(v: i32) -> Result<(), ValidationError> {
-    if v > 0 {
-        Ok(())
-    } else {
-        Err(ValidationError::new("invalid"))
-    }
-}
-
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 struct UserInput {
-    #[validate(custom(function = "validate_number"))]
-    first: Option<i32>,
-
-    #[validate(custom(function = "validate_number"))]
-    second: Option<i32>,
+    first: String,
+    second: String,
 }
 
 trait Operation {
@@ -70,25 +58,26 @@ async fn show_form() -> impl IntoResponse {
 }
 
 async fn handle_submit(Form(payload): Form<UserInput>) -> impl IntoResponse {
-    if payload.validate().is_err() {
-        return ResultTemplate {
-            result: String::new(),
-            error: "Only positive numeric values are allowed.".into(),
-        }
-        .into_response();
-    }
+    let f_str = payload.first.trim();
+    let s_str = payload.second.trim();
 
-    let (Some(first), Some(second)) = (payload.first, payload.second) else {
+    if f_str.is_empty() || s_str.is_empty() {
         return ResultTemplate {
             result: String::new(),
             error: "Both fields are required.".into(),
         }
         .into_response();
-    };
+    }
 
-    ResultTemplate {
-        result: calculate_area(first, second),
-        error: String::new(),
+    match (f_str.parse::<i32>(), s_str.parse::<i32>()) {
+        (Ok(f), Ok(s)) if f > 0 && s > 0 => ResultTemplate {
+            result: calculate_area(f, s),
+            error: String::new(),
+        },
+        _ => ResultTemplate {
+            result: String::new(),
+            error: "Only positive numeric values are allowed.".into(),
+        },
     }
     .into_response()
 }
