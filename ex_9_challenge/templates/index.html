@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <style>
+        .l-only { display: none; }
+        .label-rect, .label-cyrcle, .label-l, .label-second-generic { display: none; }
+
+        #shape-rect:checked ~ .label-rect { display: inline; }
+        #shape-rect:checked ~ .label-second-generic { display: inline; }
+
+        #shape-cyrcle:checked ~ .label-cyrcle { display: inline; }
+        #shape-cyrcle:checked ~ #input-second, 
+        #shape-cyrcle:checked ~ #br-second { display: none; }
+
+        #shape-l:checked ~ .label-l { display: inline; }
+        #shape-l:checked ~ .l-only { display: block; }
+        #shape-l:checked ~ .label-second-l { display: inline; }
+
+        .shape-selector { margin-bottom: 20px; }
+
+        .shape-radio { margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Calculator</h1>{% if error.len() > 0 %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if result.len() > 0 %}
+<pre style="color:green;">{{ result }}</pre>
+{% endif %}
+
+<form action="/submit" method="post">
+    <label>Unit of measurement:</label>
+    <select 
+        name="unit" 
+        hx-post="/submit" 
+        hx-trigger="change" 
+        hx-target="#result-box"
+        hx-include="closest form"
+    >
+        <option value="feet">Feet</option>
+        <option value="meters">Meters</option>
+    </select>
+
+    <br><br>
+
+    <label>Room's Shape:</label><br>
+    <input type="radio" id="shape-rect" name="shape" value="rect" class="shape-radio" checked hx-post="/submit" hx-target="#result-box">
+    <label for="shape-rect">Rectangle</label>
+    
+    <input type="radio" id="shape-cyrcle" name="shape" value="cyrcle" class="shape-radio" hx-post="/submit" hx-target="#result-box">
+    <label for="shape-cyrcle">Circle</label>
+    
+    <input type="radio" id="shape-l" name="shape" value="l-shape" class="shape-radio" hx-post="/submit" hx-target="#result-box">
+    <label for="shape-l">L-shape</label>
+
+    <br><br>
+
+    <label class="label-rect">What is the length of the room?</label>
+    <label class="label-cyrcle">What is the radius of the room?</label>
+    <label class="label-l">What is the outer horizontal side?</label>
+    
+    <input type="number" name="first" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+
+    <br id="br-second"><br>
+
+    <label class="label-second-generic label-rect">What is the width of the room?</label>
+    <label class="label-second-l label-l">What is the outer vertical side?</label>
+    <input id="input-second" type="number" name="second" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+
+    <div class="l-only">
+        <br>
+        <label>Inner Horizontal 1:</label>
+        <input type="number" name="h_inner1" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+        <br><br>
+        <label>Inner Horizontal 2:</label>
+        <input type="number" name="h_inner2" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+        <br><br>
+        <label>Inner Vertical 1:</label>
+        <input type="number" name="v_inner1" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+        <br><br>
+        <label>Inner Vertical 2:</label>
+        <input type="number" name="v_inner2" min="1" hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box">
+    </div>
+
+    <br>
+
+</form>
+
+<div id="result-box">
+    {% include "result.html" %}
+</div>
+
+</body>
+</html>
