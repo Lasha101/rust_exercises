@@ -60,6 +60,6 @@ fn comparing_function(arr: [i32; 3]) -> i32 {
     } else if arr[1] > arr[2] {
         arr[1]
     } else {
-        arr[3]
+        arr[2]
     }
 }

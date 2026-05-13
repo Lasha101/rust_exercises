@@ -1,66 +1,61 @@
-use std::io::{self, Write};
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+};
 
-fn main() {
-    let display_strings: &[&str] = 
-    &["How many euros are you exchanging? ", 
-    "In money of which country? "];
+use reqwest::get;
+use serde::Deserialize;
 
-    let inputed_values = collect_inputs(
-                              display_strings);
-
-    let final_amount: f64 = converter(&inputed_values.amount,
-                                      &inputed_values.rate);
-
-    print_final_string(inputed_values.amount, 
-                                inputed_values.rate,
-                                final_amount, 
-                                &inputed_values.country_name
-                    );
+#[derive(Debug, Deserialize)]
+struct Response {
+    rates: HashMap<String, f64>,
 }
 
-fn currency_rates(country_name: &str) -> Result<f64, String>{
-    let mut currency_rates = HashMap::new();
-    currency_rates.insert("USA", 1.0);
-    currency_rates.insert("Georgia", 3.25);
-    currency_rates.insert("Japan", 23.0);
-    currency_rates.insert("PRC", 14.0);
-    currency_rates.insert("Turkye", 61.0);
-    currency_rates.insert("Indenosia", 27.0);
+#[tokio::main]
+async fn main() {
+    let display_strings: &[&str] = &[
+        "How many euros are you exchanging? ",
+        "In money of which country? ",
+    ];
 
-    match currency_rates.get(country_name) {
-        Some(rate) => Ok(*rate),
-        None => Err(String::from("Country not found!")),
-    }
-}
+    let inputed_values = collect_inputs(display_strings).await;
 
-fn currency_name(country_name: &str) -> Option<&'static str> {
-    let mut currency_names = HashMap::new();
-    currency_names.insert("USA", "United States Dollar");
-    currency_names.insert("Georgia", "Georgian Lari");
-    currency_names.insert("Japan", "Japanese Yen");
-    currency_names.insert("PRC", "Chinese Yuan");
-    currency_names.insert("Turkye", "Turkish Lira");
-    currency_names.insert("Indenosia", "Indonesian Rupiah");
+    let final_amount = converter(
+        &inputed_values.amount,
+        &inputed_values.rate,
+    );
 
-    currency_names.get(country_name).copied()
+    print_final_string(
+        inputed_values.amount,
+        inputed_values.rate,
+        final_amount,
+        &inputed_values.country_name,
+    );
 }
 
 fn get_user_input(prompt_text: &str) -> String {
     print!("{}", prompt_text);
-    io::stdout().flush().expect("Error to show the text!");
+
+    io::stdout()
+        .flush()
+        .expect("Error to show the text!");
+
     let mut text = String::new();
-    io::stdin().read_line(&mut text).expect("Fail to read text!");
-    text.trim().to_string() 
+
+    io::stdin()
+        .read_line(&mut text)
+        .expect("Fail to read text!");
+
+    text.trim().to_string()
 }
 
 struct ExchangeInput {
-    amount: f64, 
+    amount: f64,
     country_name: String,
     rate: f64,
 }
 
-fn collect_inputs(arr_str: &[&str]) -> ExchangeInput {
+async fn collect_inputs(arr_str: &[&str]) -> ExchangeInput {
     let mut amount = 0.0;
     let mut country_name = String::new();
     let mut rate = 0.0;
@@ -69,45 +64,61 @@ fn collect_inputs(arr_str: &[&str]) -> ExchangeInput {
         loop {
             if index == 0 {
                 let input = get_user_input(*txt);
-                match  input.trim().parse::<f64>() {
+
+                match input.parse::<f64>() {
                     Ok(parsed_number) => {
-                            amount = parsed_number;
-                            break;
-                        }
-                        Err(error_message) => println!("{}", error_message),
-                }
-            } else if index == 1 {
-                let input = get_user_input(*txt);
-                match currency_rates(&input) {
-                    Ok(parsed_number) => {
-                        country_name = currency_name(&input).unwrap().to_string();
-                        rate = parsed_number;
+                        amount = parsed_number;
                         break;
                     }
-                    Err(error_message) => println!("{}", error_message),
+
+                    Err(error_message) => {
+                        println!("{}", error_message)
+                    }
                 }
+            } else if index == 1 {
+                let from = "EUR";
+
+                let to = get_user_input(*txt);
+
+                let url = format!(
+                    "https://api.frankfurter.app/latest?from={}&to={}",
+                    from, to
+                );
+
+                let resp: Response =
+                    get(&url).await.unwrap().json().await.unwrap();
+
+                rate = *resp.rates.get(&to).unwrap();
+
+                country_name = to;
+
+                break;
             }
-            
         }
     }
-    ExchangeInput { 
-            amount, 
-            country_name, 
-            rate,
-        }
+
+    ExchangeInput {
+        amount,
+        country_name,
+        rate,
+    }
 }
 
 fn converter(amount: &f64, rate: &f64) -> f64 {
-    amount * (rate / 1.0)
+    amount * rate
 }
 
-
-
-
-fn print_final_string(dollars: f64, rate: f64, final_amount: f64, currency_name: &str) {
-    let dollars_as_int = dollars as i32;
-    let rounded_final_amount = final_amount.round() / 100.0;
-    println!("{} euros at an exchange rate of {} is\n\
-              {} {}.",
-              dollars_as_int, rate, rounded_final_amount, currency_name);
+fn print_final_string(
+    euros: f64,
+    rate: f64,
+    final_amount: f64,
+    currency_name: &str,
+) {
+    println!(
+        "{} euros at rate {} = {} {}",
+        euros,
+        rate,
+        final_amount,
+        currency_name
+    );
 }
