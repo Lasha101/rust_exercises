@@ -19,18 +19,18 @@ struct UserInput {
 
 fn make_line(principal: f64, rate: f64, years: f64, per_year: f64, final_amount: f64) -> String {
     let years_as_int = years as i32;
-    let rounded_final_amount = (final_amount * 100.0).round()/100.0;
-    format!("${} invested at {}% for {} years\n\
-              compounded {} times per year is ${}.",
-              principal, rate, years_as_int, per_year, rounded_final_amount)
+    let rounded_initial_amount = (principal * 100.0).round()/100.0;
+    format!("You will need investing ${} at {}% for {} years\n\
+              compounded {} times per year to get ${}.",
+              rounded_initial_amount, rate, years_as_int, per_year, final_amount)
 }
 
-fn calc_compound_interest(principal: &f64,
+fn calc_compound_interest(final_amount: &f64,
                         interest: &f64, 
                         years: &f64, 
                         per_year: &f64) -> String {
-    let final_amount = principal * (1.0 + (interest/100.0)/per_year).powf(per_year*years);
-    make_line(*principal, *interest, *years, *per_year, final_amount)
+    let principal = final_amount / (1.0 + (interest/100.0)/per_year).powf(per_year*years);
+    make_line(principal, *interest, *years, *per_year, *final_amount)
 }
 
 
