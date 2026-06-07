@@ -1,19 +1,34 @@
 use std::io::{self, Write};
+use std::collections::HashMap;
+use bcrypt::{hash, verify, DEFAULT_COST};
 
 
 
 fn main() {
+    let mut plain_credentials = HashMap::new();
+    plain_credentials.insert("alice", "wonder123");
+    plain_credentials.insert("bob", "builder123");
+    plain_credentials.insert("rust", "coder123");
+
+    let mut hashed_credentials = HashMap::new();
+    for (username, plain_password) in plain_credentials.iter() {
+        match hash(plain_password, DEFAULT_COST) {
+            Ok(hashed_password) => {
+                hashed_credentials.insert(username.to_string(), hashed_password);
+            }
+            Err(error) => {
+                println!("Failed to hash password for user {}: {}", username, error);
+            }
+        }
+    }
+
     let display_strings: &[&str] = 
     &["What is the username? ", "What is the password? "];
     let inputed_values = collect_inputs(
                               display_strings);
 
-    let credentials = User {
-        username: "user_user".to_string(),
-        password: "123".to_string(), 
-    };
     let slice_tuple = (inputed_values.0.as_str(), inputed_values.1.as_str());
-    if  validator(&credentials, slice_tuple) {
+    if  validator(&hashed_credentials, slice_tuple) {
         println!("Welcome!")
     } else {
         println!("I don't know you.")
@@ -59,19 +74,15 @@ trait Validation {
     fn validation(&self, a: (&str, &str)) -> bool;
 }
 
-struct User {
-    username: String,
-    password: String,
-}
-
-
-
-impl Validation for User {
+impl Validation for HashMap<String, String> {
     fn validation(&self, a: (&str, &str)) -> bool {
-        a.0 == self.username && a.1 == self.password 
+        let (input_username, input_password) = a;
+        match self.get(input_username) {
+            Some(hashed_password) => verify(input_password, hashed_password).unwrap_or(false),
+            None => false,
+        }
     }
 }
-
 
 fn validator(validation: &dyn Validation, a: (&str, &str)) -> bool {
     validation.validation(a) 
