@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>Temperature Converter</h1>
+
+    <form>
+        <label>Temperature:</label>
+        <input type="number" name="value" step="0.01"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+
+        <label>Unit:</label>
+        <select name="unit"
+            hx-post="/submit" hx-trigger="change" hx-target="#result-box" hx-include="closest form">
+            <option value="celsius">Celsius (°C)</option>
+            <option value="fahrenheit">Fahrenheit (°F)</option>
+            <option value="kelvin">Kelvin (K)</option>
+        </select>
+    </form>
+
+    <div id="result-box">
+        {% include "result.html" %}
+    </div>
+</body>
+</html>
