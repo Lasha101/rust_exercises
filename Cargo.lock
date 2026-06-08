@@ -418,6 +418,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ex_17_challenge"
+version = "0.1.0"
+dependencies = [
+ "askama",
+ "askama_axum",
+ "axum",
+ "serde",
+ "tokio",
+ "validator",
+]
+
+[[package]]
 name = "ex_2_challenge"
 version = "0.1.0"
 dependencies = [

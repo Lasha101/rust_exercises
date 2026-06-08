@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAC Calculator</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>BAC Calculator</h1>
+
+    <form>
+        <label>Unit of measurement:</label>
+        <select name="unit"
+            hx-post="/submit" hx-trigger="change" hx-target="#result-box" hx-include="closest form">
+            <option value="imperial">Imperial (lbs)</option>
+            <option value="metric">Metric (kg)</option>
+        </select>
+
+        <br><br>
+
+        <label>Your weight:</label>
+        <input type="number" name="weight" min="1" step="0.1"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+
+        <label>Gender:</label>
+        <select name="gender"
+            hx-post="/submit" hx-trigger="change" hx-target="#result-box" hx-include="closest form">
+            <option value="">-- select --</option>
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+        </select>
+
+        <br><br>
+
+        <label>Number of drinks:</label>
+        <input type="number" name="drinks" min="0" step="1" value="0"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+
+        <label>Alcohol by volume (e.g. 0.05 for 5%):</label>
+        <input type="number" name="abv" min="0" max="1" step="0.01"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+
+        <label>Hours since last drink:</label>
+        <input type="number" name="hours" min="0" step="0.1" value="0"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+
+        <label>State (e.g. california):</label>
+        <input type="text" name="state" placeholder="state name"
+            hx-post="/submit" hx-trigger="input delay:300ms" hx-target="#result-box" hx-include="closest form" hx-swap="innerHTML">
+
+        <br><br>
+    </form>
+
+    <div id="result-box">
+        {% include "result.html" %}
+    </div>
+</body>
+</html>
