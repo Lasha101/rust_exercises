@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 520px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f0f2f5;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 1.5rem; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .field { margin: 1.2rem 0; }
+        .field > label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #555;
+        }
+        .val { font-weight: bold; color: #222; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: #3498db; }
+
+        /* Hide radio inputs visually while keeping them functional */
+        #unit-metric, #unit-imperial {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        /* Segmented control styled from the radio labels */
+        .unit-options {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .unit-option {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            background: #fafafa;
+            font-size: 1rem;
+            font-weight: normal;
+            color: #555;
+        }
+        .unit-option + .unit-option { border-left: 1px solid #ccc; }
+
+        /* Highlight the active unit option via CSS sibling selector */
+        #unit-metric:checked ~ .field .unit-option[for="unit-metric"],
+        #unit-imperial:checked ~ .field .unit-option[for="unit-imperial"] {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Show/hide metric vs imperial sections via CSS */
+        #imperial-section { display: none; }
+        #unit-imperial:checked ~ #metric-section { display: none; }
+        #unit-imperial:checked ~ #imperial-section { display: block; }
+
+        #result-box { margin-top: 1.5rem; min-height: 60px; }
+    </style>
+</head>
+<body>
+    <h1>BMI Calculator</h1>
+    <div class="card">
+        <form id="bmi-form"
+            hx-post="/submit"
+            hx-trigger="load, input delay:120ms, change"
+            hx-target="#result-box"
+            hx-swap="innerHTML">
+
+            <!--
+                Radio inputs must sit BEFORE the sections so that
+                CSS general-sibling (~) selectors can reach them.
+            -->
+            <input type="radio" id="unit-metric" name="unit" value="metric" checked>
+            <input type="radio" id="unit-imperial" name="unit" value="imperial">
+
+            <div class="field">
+                <label>Unit System</label>
+                <div class="unit-options">
+                    <label for="unit-metric" class="unit-option">Metric (kg / cm)</label>
+                    <label for="unit-imperial" class="unit-option">Imperial (lbs / ft + in)</label>
+                </div>
+            </div>
+
+            <div id="metric-section">
+                <div class="field">
+                    <label>Weight <span class="val"><span id="wkg-val">70</span> kg</span></label>
+                    <input type="range" name="weight_kg" min="20" max="200" value="70" step="0.5"
+                        hx-on:input="document.getElementById('wkg-val').textContent=this.value">
+                </div>
+                <div class="field">
+                    <label>Height <span class="val"><span id="hcm-val">170</span> cm</span></label>
+                    <input type="range" name="height_cm" min="100" max="220" value="170" step="1"
+                        hx-on:input="document.getElementById('hcm-val').textContent=this.value">
+                </div>
+            </div>
+
+            <div id="imperial-section">
+                <div class="field">
+                    <label>Weight <span class="val"><span id="wlbs-val">154</span> lbs</span></label>
+                    <input type="range" name="weight_lbs" min="44" max="440" value="154" step="1"
+                        hx-on:input="document.getElementById('wlbs-val').textContent=this.value">
+                </div>
+                <div class="field">
+                    <label>Height — feet <span class="val"><span id="hft-val">5</span> ft</span></label>
+                    <input type="range" name="height_ft" min="3" max="8" value="5" step="1"
+                        hx-on:input="document.getElementById('hft-val').textContent=this.value">
+                </div>
+                <div class="field">
+                    <label>Height — inches <span class="val"><span id="hin-val">9</span> in</span></label>
+                    <input type="range" name="height_in" min="0" max="11" value="9" step="1"
+                        hx-on:input="document.getElementById('hin-val').textContent=this.value">
+                </div>
+            </div>
+
+        </form>
+
+        <div id="result-box"></div>
+    </div>
+</body>
+</html>

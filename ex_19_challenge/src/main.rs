@@ -1,81 +1,95 @@
-use std::io::{self, Write};
+use askama::Template;
+use axum::{Form, Router, routing::{get, post}};
+use serde::Deserialize;
 
-fn main() {
-    let display_strings: &[&str] = 
-    &[
-    "Choice unit! \nFor Metric enter \"1.0\" for Imperial enter \"2.0\":",
-    "Enter your weight: ", 
-    "Enter your height: ",
-    ];
+#[derive(Template)]
+#[template(path = "index.html")]
+struct IndexTemplate;
 
-    let inputed_values = collect_inputs(
-                              display_strings);
+#[derive(Template)]
+#[template(path = "result.html")]
+struct ResultTemplate {
+    error: String,
+    result: String,
+    color: String,
+}
 
-    let bmi_metric: f64 = bmi_calculator_metric(
-                                    &inputed_values[1],
-                                    &inputed_values[2],
-                                    );
-    let bmi_imperial: f64 = bmi_calculator(&bmi_metric);
-    
-    let ratio:f64;
-    if inputed_values[0] == 1.0 {
-        ratio = bmi_metric;
+#[derive(Deserialize)]
+struct BmiForm {
+    unit: Option<String>,
+    weight_kg: Option<f64>,
+    height_cm: Option<f64>,
+    weight_lbs: Option<f64>,
+    height_ft: Option<f64>,
+    height_in: Option<f64>,
+}
+
+fn bmi_category(bmi: f64) -> (&'static str, &'static str) {
+    if bmi < 18.5 {
+        ("Underweight — see your doctor", "#3498db")
+    } else if bmi < 25.0 {
+        ("Normal weight", "#2ecc71")
+    } else if bmi < 30.0 {
+        ("Overweight — see your doctor", "#f39c12")
     } else {
-        ratio = bmi_imperial;
-    }
-
-    print_final_string(ratio);
-}
-
-fn get_user_input(prompt_text: &str) -> String {
-    print!("{}", prompt_text);
-    io::stdout().flush().expect("Error to show the text!");
-    let mut text = String::new();
-    io::stdin().read_line(&mut text).expect("Fail to read text!");
-    text.trim().to_string() 
-}
-
-fn validate_nums(input:&str) -> Result<f64, String> {
-    match input.trim().parse::<f64>() {
-        Ok(number) => Ok(number),
-        Err(_) => Err(String::from("Cannot calculate value.")),
+        ("Obese — see your doctor", "#e74c3c")
     }
 }
 
+async fn index() -> IndexTemplate {
+    IndexTemplate
+}
 
-fn collect_inputs(arr_str: &[&str]) -> [f64; 3] {
-    let mut user_inputs = [0.0, 0.0, 0.0];
-    for (index, txt) in arr_str.iter().enumerate() {
-        loop {
-            let input = get_user_input(txt);
-            let result = validate_nums(&input);
-            match result {
-                Ok(number) => {
-                    user_inputs[index] = number;
-                    break;
-                }
-                Err(e) => println!("{}", e),
-            };    
-        }  
+async fn submit(Form(form): Form<BmiForm>) -> ResultTemplate {
+    let unit = form.unit.as_deref().unwrap_or("metric");
+
+    let bmi_result: Result<f64, &str> = match unit {
+        "imperial" => {
+            let weight = form.weight_lbs.unwrap_or(0.0);
+            let feet = form.height_ft.unwrap_or(0.0);
+            let inches = form.height_in.unwrap_or(0.0);
+            let total_inches = feet * 12.0 + inches;
+            if total_inches <= 0.0 || weight <= 0.0 {
+                Err("Please enter valid height and weight.")
+            } else {
+                Ok(703.0 * weight / (total_inches * total_inches))
+            }
+        }
+        _ => {
+            let weight = form.weight_kg.unwrap_or(0.0);
+            let height_m = form.height_cm.unwrap_or(0.0) / 100.0;
+            if height_m <= 0.0 || weight <= 0.0 {
+                Err("Please enter valid height and weight.")
+            } else {
+                Ok(weight / (height_m * height_m))
+            }
+        }
+    };
+
+    match bmi_result {
+        Ok(bmi) => {
+            let (category, color) = bmi_category(bmi);
+            ResultTemplate {
+                error: String::new(),
+                result: format!("BMI: {:.1}  —  {}", bmi, category),
+                color: color.to_string(),
+            }
+        }
+        Err(e) => ResultTemplate {
+            error: e.to_string(),
+            result: String::new(),
+            color: String::new(),
+        },
     }
-    user_inputs
 }
 
-fn bmi_calculator_metric(weight: &f64, height: &f64) -> f64 {
-    weight / (height * height) 
-}
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/", get(index))
+        .route("/submit", post(submit));
 
-fn bmi_calculator(bmi_metric: &f64) -> f64 {
-    bmi_metric * 703.0
-}
-
-fn print_final_string(ratio: f64) {
-    println!("Your BMI is {}", ratio);
-    if ratio <= 18.5 {
-        println!("You are underweight. You should see your doctor.");
-    } else if ratio >= 25.0 {
-        println!("You are overweight. You should see your doctor.");
-    } else {
-        println!("You are within the ideal weight range.")
-    }
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    println!("Listening on http://localhost:3000");
+    axum::serve(listener, app).await.unwrap();
 }
