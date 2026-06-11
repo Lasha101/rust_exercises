@@ -1,15 +1,9 @@
 use std::io::{self, Write};
 
 fn main() {
-    let display_strings: &[&str] = 
-    &[
-    "Enter the first number: ", 
-    "Enter the second number: ", 
-    "Enter the third number:: ",
-    ];
+    let display_string: &str = &"Enter the number: ";
 
-    let inputed_values = collect_inputs(
-                              display_strings);
+    let inputed_values = collect_inputs(display_string);
     
     let largest_num = comparing_function(inputed_values);
 
@@ -31,35 +25,39 @@ fn validate_nums(input:&str) -> Result<i32, String> {
     }
 }
 
-fn collect_inputs(arr_str: &[&str]) -> [i32; 3] {
-    let mut user_inputs = [0, 0, 0];
-    for (index, txt) in arr_str.iter().enumerate() {
-        loop {
-            let input = get_user_input(txt);
-            let result = validate_nums(&input);
-            match result {
-                Ok(number) => {
-                    let populated_slice = &user_inputs[..index];
-                    if !populated_slice.contains(&number) {
-                        user_inputs[index] = number;
-                        break;
-                    } else {
-                        println!("Enter different number!");
-                    }  
+fn collect_inputs(txt: &str) -> Vec<i32> {
+    let mut user_inputs = Vec::new(); // Fixed: Initialized the vector
+    loop {
+        let input = get_user_input(txt);
+        
+        // Check for exit condition first before trying to validate as a number
+        if input == "done" {
+            break; // Fixed: Properly breaks the loop to return the vector
+        }
+
+        let result = validate_nums(&input);
+        
+        // Fixed: Rust matches over Results; it doesn't use Python-like "if result" or "in" syntax
+        match result {
+            Ok(num) => {
+                if user_inputs.contains(&num) {
+                    println!("Number already entered. Try again.");
+                    continue;
+                } else {
+                    user_inputs.push(num);
                 }
-                Err(e) => println!("{}", e),
-            };   
-        }  
-    }
+            }
+            Err(_) => {
+                println!("Invalid input. Type a number or 'done' to finish.");
+                continue;
+            }
+        }   
+    }  
     user_inputs
 }
 
-fn comparing_function(arr: [i32; 3]) -> i32 {
-    if arr[0] > arr[1] && arr[0] > arr[2] {
-        arr[0]
-    } else if arr[1] > arr[2] {
-        arr[1]
-    } else {
-        arr[2]
-    }
+fn comparing_function(arr: Vec<i32>) -> i32 {
+    // Fixed: Standard Rust approach to find the maximum in an array/vector safely
+    // Returns 0 if the vector is empty, otherwise returns the max value
+    *arr.iter().max().unwrap_or(&0)
 }
