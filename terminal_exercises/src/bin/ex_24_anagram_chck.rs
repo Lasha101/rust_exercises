@@ -3,19 +3,21 @@ use std::io::{self, Write};
 fn main() {
     let display_strings: &[&str] = 
     &["Enter two strings and I'll tell you if they are anagrams!\n\
-    Enter the first string: ", 
-    "Enter the second string: "];
+       Enter the first string: ", "Enter the second string: "];
 
-    let inputed_values = get_validate_strings(display_strings);
+    let mut inputed_values = get_validate_strings(display_strings);
 
-    let is_anagram = is_anagram(&inputed_values);
+    let original_word_1 = inputed_values[0].clone();
+    let original_word_2 = inputed_values[1].clone();
+
+    let (first_part, second_part) = inputed_values.split_at_mut(1);
+    let is_anagram = is_anagram(&mut first_part[0], &mut second_part[0]);
     
     if is_anagram {
-        println!("\"{}\" and \"{}\" are anagrams.", inputed_values[0], inputed_values[1])
+        println!("\"{}\" and \"{}\" are anagrams.", original_word_1, original_word_2)
     } else {
         println!("They are not anagrams.")
     }
-
 }
 
 fn get_user_input(prompt_text: &str) -> String {
@@ -49,14 +51,41 @@ fn get_validate_strings(arr_str: &[&str]) -> [String; 2] {
     user_inputs
 }
 
-
-
-fn is_anagram(data: &[String; 2]) -> bool {
-    if data[0].len() != data[1].len() {
-        return false; 
+fn is_anagram(word_1: &mut String, word_2: &mut String) -> bool {
+    let mut total_1 = 0;
+    let mut total_2 = 0;
+    for _ in word_1.chars() {
+        total_1 = total_1 + 1;
     }
-    let mut counts: [i32; 26] = [0; 26];
-    for b in data[0].bytes() {counts[(b - b'a') as usize] += 1;}
-    for b in data[1].bytes() {counts[(b - b'a') as usize] -= 1;}
-    counts.iter().all(|&count| count == 0)
+    for _ in word_2.chars() {
+        total_2 = total_2 + 1;
+    }
+    if total_1 == total_2 {
+        let mut chars_1: Vec<char> = word_1.chars().collect();
+        let mut chars_2: Vec<char> = word_2.chars().collect();
+
+        for idx_1 in (0..chars_1.len()).rev() {
+            let ch_1 = chars_1[idx_1];
+            let mut removed = false;
+
+            for idx_2 in (0..chars_2.len()).rev() {
+                let ch_2 = chars_2[idx_2];
+                
+                if ch_1 == ch_2 {
+                    chars_1.remove(idx_1);
+                    chars_2.remove(idx_2);
+                    removed = true;
+                    break;
+                }
+            }
+            if removed {
+                continue;
+            }
+        }    
+        word_1.clear();
+        word_2.clear();
+        for ch in chars_1 { word_1.push(ch); }
+        for ch in chars_2 { word_2.push(ch); }
+    }
+    word_1 == word_2
 }
