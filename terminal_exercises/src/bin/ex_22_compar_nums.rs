@@ -26,18 +26,16 @@ fn validate_nums(input:&str) -> Result<i32, String> {
 }
 
 fn collect_inputs(txt: &str) -> Vec<i32> {
-    let mut user_inputs = Vec::new(); // Fixed: Initialized the vector
+    let mut user_inputs = Vec::new(); 
     loop {
         let input = get_user_input(txt);
         
-        // Check for exit condition first before trying to validate as a number
         if input == "done" {
-            break; // Fixed: Properly breaks the loop to return the vector
+            break; 
         }
 
         let result = validate_nums(&input);
         
-        // Fixed: Rust matches over Results; it doesn't use Python-like "if result" or "in" syntax
         match result {
             Ok(num) => {
                 if user_inputs.contains(&num) {
@@ -57,7 +55,5 @@ fn collect_inputs(txt: &str) -> Vec<i32> {
 }
 
 fn comparing_function(arr: Vec<i32>) -> i32 {
-    // Fixed: Standard Rust approach to find the maximum in an array/vector safely
-    // Returns 0 if the vector is empty, otherwise returns the max value
     *arr.iter().max().unwrap_or(&0)
 }
