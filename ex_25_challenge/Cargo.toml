@@ -1,0 +1,12 @@
+[package]
+name = "ex_25_challenge"
+version = "0.1.0"
+edition = "2021" # Changed to a stable edition
+
+[dependencies]
+axum = "0.7.5" # Specify patch version for stability
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+validator = { version = "0.19", features = ["derive"] }
+askama_axum = "0.4.0" # Specify patch version for stability
+askama = { version = "0.12.1" } # Specify patch version for stability
