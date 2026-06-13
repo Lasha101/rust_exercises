@@ -1,0 +1,5 @@
+<div>
+    {% for msg in messages %}
+        <div style="color: {% if msg == "There were no errors found." %}green{% else %}red{% endif %}; margin-bottom: 5px; font-weight: bold;">{{ msg }}</div>
+    {% endfor %}
+</div>

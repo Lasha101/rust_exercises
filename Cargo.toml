@@ -10,5 +10,6 @@ members = [
     "ex_17_challenge", 
     "ex_18_challenge", 
     "ex_19_challenge", 
-    "ex_25_challenge",
+    "ex_25_challenge", 
+    "ex_27_challenge",
     ]

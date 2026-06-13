@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validating Inputs</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 520px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background: #f0f2f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin: 1.2rem 0;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        #result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Input Validator</h1>
+    <div class="card">
+        <form hx-post="/validate" hx-trigger="keyup changed delay:500ms, blur from:input" hx-target="#result">
+            <div class="form-group">
+                <label>First Name:</label>
+                <input type="text" name="first_name" placeholder="Jimmy">
+            </div>
+            <div class="form-group">
+                <label>Last Name:</label>
+                <input type="text" name="last_name" placeholder="James">
+            </div>
+            <div class="form-group">
+                <label>ZIP Code:</label>
+                <input type="text" name="zip_code" placeholder="55555">
+            </div>
+            <div class="form-group">
+                <label>Employee ID:</label>
+                <input type="text" name="employee_id" placeholder="TK-4211">
+            </div>
+        </form>
+
+        <div id="result">
+        </div>
+    </div>
+</body>
+</html>
